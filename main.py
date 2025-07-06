@@ -211,6 +211,19 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central)
         root_layout = QHBoxLayout(central)
 
+        # Watermark label
+        self.watermark = QLabel("Lovingly Crafted ❤️ By Noro.")
+        self.watermark.setObjectName("watermark")
+        self.watermark.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
+        self.watermark.setMargin(8)
+
+        # Absolute positioning over central widget
+        self.watermark.setParent(self)
+        self.watermark.resize(self.width(), 30)
+        self.watermark.move(self.width() - 300, self.height() - 40)
+        self.watermark.raise_()  # Ensure it's above other widgets
+
+
         # Sidebar (Add + Theme)
         sidebar = QVBoxLayout()
         root_layout.addLayout(sidebar, stretch=0)
@@ -241,6 +254,12 @@ class MainWindow(QMainWindow):
         sidebar.addWidget(theme_btn)
 
         sidebar.addStretch()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if hasattr(self, 'watermark'):
+            self.watermark.move(self.width() - self.watermark.width() - 20, self.height() - self.watermark.height() - 10)
+
 
     def refresh_cards(self):
         """Populate the scroll area with either task cards or an empty placeholder."""
