@@ -2,7 +2,7 @@
   {
     "id": 1,
     "desc": "Eat lunch",
-    "done": false
+    "done": true
   },
   {
     "id": 2,

@@ -35,6 +35,20 @@ def add_task(description: str):
         json.dump(tasks, f, indent=2)
     print(f"Added task [{next_id}]: {description}")
 
+def complete_task(task_id: int):
+    tasks = load_tasks()
+    for t in tasks:
+        if t['id'] == task_id:
+            if t.get('done'):
+                print(f"Task [{task_id}] is already completed.")
+            else:
+                t['done'] = True
+                with open(TASKS_FILE, 'w') as f:
+                    json.dump(tasks, f, indent=2)
+                print(f"✅ Marked task [{task_id}] as done.")
+            return
+    print(f"❌ No task found with ID {task_id}.")
+
 def main():
     parser = argparse.ArgumentParser(prog='todo')
     subparsers = parser.add_subparsers(dest='cmd')
@@ -42,6 +56,9 @@ def main():
     # Add parser for "add" command
     add_p = subparsers.add_parser('add', help='Add a new task')
     add_p.add_argument('desc', metavar='DESCRIPTION', help='Task description')
+    # Add parser for "done" command
+    done_p = subparsers.add_parser('done', help='Mark a task as done')
+    done_p.add_argument('id', type=int, metavar='ID', help='ID of the task to mark done')
 
     args = parser.parse_args()
 
@@ -49,6 +66,8 @@ def main():
         list_tasks()
     elif args.cmd == 'add':
         add_task(args.desc)
+    elif args.cmd == 'done':
+        complete_task(args.id)
     else:
         parser.print_help()
 
