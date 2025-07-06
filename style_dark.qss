@@ -1,0 +1,97 @@
+QWidget {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+}
+
+QPushButton {
+    background-color: #3a3a3a;
+    color: #ffffff;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 6px 12px;
+}
+
+QPushButton:hover {
+    background-color: #505050;
+}
+
+QPushButton:pressed {
+    background-color: #2d2d2d;
+}
+
+QTableView {
+    background-color: #252525;
+    gridline-color: #444;
+    border: none;
+    selection-background-color: #0078d7;
+    selection-color: white;
+    alternate-background-color: #2c2c2c;
+}
+
+QHeaderView::section {
+    background-color: #333;
+    color: #ddd;
+    padding: 6px;
+    border: none;
+    font-weight: bold;
+}
+
+/* Card container */
+QFrame#taskCard {
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 12px;
+    border: none;                      /* remove any border */
+}
+
+/* On hover, slight lift */
+QFrame#taskCard:hover {
+    background: #333333;
+    /* we’ll animate lift with QPropertyAnimation later if desired */
+}
+
+/* Remove any default QLabel frame */
+QLabel {
+    border: none;
+    background: transparent;
+}
+
+/* Icon buttons inside card */
+QPushButton#cardBtn {
+    background: transparent;
+    border: none;
+    padding: 4px;
+}
+
+/* Timestamp style */
+QLabel#timestamp {
+    color: #999;
+    font-size: 10px;
+}
+
+QScrollArea {
+    border: none;        /* remove white frame */
+    background: transparent;
+}
+
+QWidget#cardContainer {
+    background: transparent;
+}
+
+QToolButton#doneBtn:hover {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+QPushButton#cardBtn:hover {
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+}
+
+QLabel#emptyPlaceholder {
+    color: #bbb;
+    font-size: 24px;
+    font-weight: bold;
+    qproperty-alignment: AlignCenter;
+}
