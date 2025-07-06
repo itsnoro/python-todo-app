@@ -49,6 +49,17 @@ def complete_task(task_id: int):
             return
     print(f"❌ No task found with ID {task_id}.")
 
+def remove_task(task_id: int):
+    tasks = load_tasks()
+    for i, t in enumerate(tasks):
+        if t['id'] == task_id:
+            removed = tasks.pop(i)
+            with open(TASKS_FILE, 'w') as f:
+                json.dump(tasks, f, indent=2)
+            print(f"🗑️  Removed task [{task_id}]: {removed['desc']}")
+            return
+    print(f"❌ No task found with ID {task_id}.")
+
 def main():
     parser = argparse.ArgumentParser(prog='todo')
     subparsers = parser.add_subparsers(dest='cmd')
@@ -59,6 +70,9 @@ def main():
     # Add parser for "done" command
     done_p = subparsers.add_parser('done', help='Mark a task as done')
     done_p.add_argument('id', type=int, metavar='ID', help='ID of the task to mark done')
+    #Add parser for "remove" command
+    rm_p = subparsers.add_parser('remove', help='Remove a task by ID')
+    rm_p.add_argument('id', type=int, metavar='ID', help='ID of the task to remove')
 
     args = parser.parse_args()
 
@@ -68,6 +82,8 @@ def main():
         add_task(args.desc)
     elif args.cmd == 'done':
         complete_task(args.id)
+    elif args.cmd == 'remove':
+        remove_task(args.id)
     else:
         parser.print_help()
 
