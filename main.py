@@ -233,7 +233,6 @@ class MainWindow(QMainWindow):
 
         # Fill sidebar
         add_btn = QPushButton("➕ Add Task")
-        add_btn.setIcon(load_icon("add"))
         add_btn.clicked.connect(self.on_add_task)
         sidebar.addWidget(add_btn)
 
