@@ -9,6 +9,15 @@ from PyQt6.QtGui import QIcon
 from datetime import datetime
 from tasks import load_tasks
 
+def load_icon(name: str) -> QIcon:
+    """Try to load an icon from the 'res' folder (SVG or PNG). Returns empty QIcon if not found."""
+    base = os.path.join("res", name)
+    for ext in (".svg", ".png"):
+        path = base + ext
+        if os.path.exists(path):
+            return QIcon(path)
+    return QIcon()  # empty icon
+
 class TaskModel(QAbstractTableModel):
     def __init__(self):
         super().__init__()
@@ -109,20 +118,20 @@ class MainWindow(QMainWindow):
         # Add Task Button
         button_layout = QHBoxLayout()
         add_btn = QPushButton(" Add Task")
-        add_btn.setIcon(QIcon("res/add.png"))
+        add_btn.setIcon(load_icon("add"))
         add_btn.clicked.connect(self.on_add_task)
         button_layout.addWidget(add_btn)
         layout.addLayout(button_layout)
         done_btn = QPushButton(" Mark as Done")
-        done_btn.setIcon(QIcon("res/done.png"))
+        done_btn.setIcon(load_icon("done"))
         done_btn.clicked.connect(self.on_mark_done)
         button_layout.addWidget(done_btn)
         remove_btn = QPushButton(" Remove Task")
-        remove_btn.setIcon(QIcon("res/remove.png"))
+        remove_btn.setIcon(load_icon("remove"))
         remove_btn.clicked.connect(self.on_remove_task)
         button_layout.addWidget(remove_btn)
         edit_btn = QPushButton(" Edit Task")
-        edit_btn.setIcon(QIcon("res/edit.png"))
+        edit_btn.setIcon(load_icon("edit"))
         edit_btn.clicked.connect(self.on_edit_task)
         button_layout.addWidget(edit_btn)
 
