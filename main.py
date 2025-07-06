@@ -201,7 +201,8 @@ class TaskModel:
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("To-Do CLI → GUI")
+        self.setWindowTitle("To-Do")
+        self.setWindowIcon(load_icon("app"))
         self.setMinimumSize(800, 600)
         self.current_theme = "dark"
 
