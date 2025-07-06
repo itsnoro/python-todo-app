@@ -84,50 +84,41 @@ class TaskCard(QFrame):
         self.task = task
         self.parent_window = parent_window
         self.setObjectName("taskCard")
-        # Square shape
         self.setFixedSize(180, 180)
-        # Layout
         v = QVBoxLayout(self)
         v.setContentsMargins(8, 8, 8, 8)
         v.setSpacing(6)
 
-        # Description
         title = QLabel(task["desc"])
         title.setWordWrap(True)
         title.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
         v.addWidget(title, alignment=Qt.AlignmentFlag.AlignTop)
 
-        # Created timestamp
         created_lbl = QLabel(f"Created: {task.get('created_at', '')}")
         created_lbl.setObjectName("timestamp")
         v.addWidget(created_lbl, alignment=Qt.AlignmentFlag.AlignLeft)
 
-        # Completed timestamp (only if done)
         if task.get("completed_at"):
             comp_lbl = QLabel(f"Completed: {task['completed_at']}")
             comp_lbl.setObjectName("timestamp")
             v.addWidget(comp_lbl, alignment=Qt.AlignmentFlag.AlignLeft)
 
-        v.addStretch()  # push buttons to bottom
+        v.addStretch()
 
-        # Buttons row
         h = QHBoxLayout()
         h.setSpacing(6)
         h.setAlignment(Qt.AlignmentFlag.AlignRight)
 
-        # -- DONE button as a checkbox --
         done_btn = QToolButton()
         done_btn.setObjectName("doneBtn")
         done_btn.setCheckable(True)
         done_btn.setChecked(bool(task.get("done", False)))
-        # show icon only when checked
         icon = load_icon("done") if done_btn.isChecked() else QIcon()
         done_btn.setIcon(icon)
         done_btn.setFixedSize(24, 24)
         done_btn.clicked.connect(lambda _, b=done_btn: self._toggle_done(b))
         h.addWidget(done_btn)
 
-        # -- EDIT button (icon only) --
         edit_btn = QPushButton()
         edit_btn.setObjectName("cardBtn")
         edit_btn.setIcon(load_icon("edit"))
@@ -135,7 +126,6 @@ class TaskCard(QFrame):
         edit_btn.clicked.connect(lambda _, s=parent_window.on_card_edit: s(self))
         h.addWidget(edit_btn)
 
-        # -- REMOVE button (icon only) --
         remove_btn = QPushButton()
         remove_btn.setObjectName("cardBtn")
         remove_btn.setIcon(load_icon("remove"))
@@ -146,12 +136,9 @@ class TaskCard(QFrame):
         v.addLayout(h)
 
     def _toggle_done(self, btn: QToolButton):
-        # Update model
         idx = self.parent_window.model._tasks.index(self.task)
         self.parent_window.model.toggle_done(idx)
-        # Toggle icon
         btn.setIcon(load_icon("done") if btn.isChecked() else QIcon())
-        # Refresh cards to show completed_at
         self.parent_window.refresh_cards()
 
 
@@ -206,25 +193,21 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(800, 600)
         self.current_theme = "dark"
 
-        # Central widget & root layout
         central = QWidget()
         self.setCentralWidget(central)
         root_layout = QHBoxLayout(central)
 
-        # Watermark label
         self.watermark = QLabel("Lovingly Crafted ❤️ By Noro.")
         self.watermark.setObjectName("watermark")
         self.watermark.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
         self.watermark.setMargin(8)
 
-        # Absolute positioning over central widget
         self.watermark.setParent(self)
         self.watermark.resize(self.width(), 30)
         self.watermark.move(self.width() - 300, self.height() - 40)
         self.watermark.raise_()  # Ensure it's above other widgets
 
 
-        # Sidebar (Add + Theme)
         sidebar = QVBoxLayout()
         root_layout.addLayout(sidebar, stretch=0)
 
@@ -236,15 +219,12 @@ class MainWindow(QMainWindow):
         self.scroll.setFrameShape(QFrame.Shape.NoFrame)  # remove white border
         root_layout.addWidget(self.scroll, stretch=1)
 
-        # Card container using FlowLayout
         self.card_container = QWidget()
         self.card_container.setObjectName("cardContainer")
         self.card_layout = FlowLayout(self.card_container, margin=8, spacing=12)
 
-        # Initially show cards (or placeholder)
         self.refresh_cards()
 
-        # Fill sidebar
         add_btn = QPushButton("➕ Add Task")
         add_btn.clicked.connect(self.on_add_task)
         sidebar.addWidget(add_btn)
@@ -266,7 +246,6 @@ class MainWindow(QMainWindow):
         tasks = self.model._tasks
 
         if not tasks:
-            # Show placeholder widget
             placeholder_widget = QWidget()
             placeholder_layout = QVBoxLayout(placeholder_widget)
             placeholder_layout.setContentsMargins(0, 0, 0, 0)
@@ -285,17 +264,14 @@ class MainWindow(QMainWindow):
             self.scroll.setWidget(placeholder_widget)
             return
 
-        # Otherwise, show the card container
         self.scroll.setWidget(self.card_container)
 
-        # Clear existing cards
         while self.card_layout.count():
             item = self.card_layout.takeAt(0)
             w = item.widget()
             if w:
                 w.setParent(None)
 
-        # Add each TaskCard
         for task in tasks:
             card = TaskCard(task, parent_window=self)
             self.card_layout.addWidget(card)
@@ -345,7 +321,6 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    # Load default (dark) theme
     try:
         with open("style_dark.qss", "r") as f:
             app.setStyleSheet(f.read())
