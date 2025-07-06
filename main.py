@@ -10,7 +10,6 @@ from PyQt6.QtCore import Qt, QRect, QPoint, QSize
 from datetime import datetime
 from tasks import load_tasks, save_tasks
 
-# Helper to load SVG/PNG icons from res/
 def load_icon(name: str) -> QIcon:
     base = os.path.join("res", name)
     for ext in (".svg", ".png"):
