@@ -3,6 +3,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtWidgets import QTableView, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QAbstractTableModel, QModelIndex
+from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QInputDialog
 from tasks import load_tasks
 
 class TaskModel(QAbstractTableModel):
@@ -29,6 +30,21 @@ class TaskModel(QAbstractTableModel):
         elif col == 2:
             return "✓" if task.get('done') else ""
         return None
+    def add_task(self, desc: str):
+        from tasks import save_tasks
+        # Generate new ID
+        next_id = max((t["id"] for t in self._tasks), default=0) + 1
+        task = {
+            "id": next_id,
+            "desc": desc,
+            "done": False,
+            "created_at": "",  # optional
+            "completed_at": None
+        }
+        self.beginInsertRows(QModelIndex(), len(self._tasks), len(self._tasks))
+        self._tasks.append(task)
+        self.endInsertRows()
+        save_tasks(self._tasks)
 
     def headerData(self, section: int, orientation, role: int = Qt.ItemDataRole.DisplayRole):
         if role != Qt.ItemDataRole.DisplayRole or orientation != Qt.Orientation.Horizontal:
@@ -52,6 +68,20 @@ class MainWindow(QMainWindow):
         self.view.setModel(self.model)
         self.view.resizeColumnsToContents()
         layout.addWidget(self.view)
+        # Add Task Button
+        button_layout = QHBoxLayout()
+        add_btn = QPushButton("➕ Add Task")
+        add_btn.clicked.connect(self.on_add_task)
+        button_layout.addWidget(add_btn)
+        layout.addLayout(button_layout)
+
+    def on_add_task(self):
+        text, ok = QInputDialog.getText(self, "Add Task", "Enter task description:")
+        if ok and text.strip():
+            self.model.add_task(text.strip())
+            self.view.resizeColumnsToContents()
+
+
 
 def main():
     app = QApplication(sys.argv)
