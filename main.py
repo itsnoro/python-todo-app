@@ -60,6 +60,14 @@ class TaskModel(QAbstractTableModel):
         self.dataChanged.emit(self.index(row, 0), self.index(row, 2))
         save_tasks(self._tasks)
 
+    def remove_task(self, row: int):
+        from tasks import save_tasks
+        if 0 <= row < len(self._tasks):
+            self.beginRemoveRows(QModelIndex(), row, row)
+            del self._tasks[row]
+            self.endRemoveRows()
+            save_tasks(self._tasks)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -87,6 +95,10 @@ class MainWindow(QMainWindow):
         done_btn = QPushButton("✅ Mark as Done")
         done_btn.clicked.connect(self.on_mark_done)
         button_layout.addWidget(done_btn)
+        remove_btn = QPushButton("🗑 Remove Task")
+        remove_btn.clicked.connect(self.on_remove_task)
+        button_layout.addWidget(remove_btn)
+
 
     def on_add_task(self):
         text, ok = QInputDialog.getText(self, "Add Task", "Enter task description:")
@@ -103,6 +115,27 @@ class MainWindow(QMainWindow):
         self.model.toggle_done(row)
         self.view.clearSelection()
         self.view.resizeColumnsToContents()
+
+    def on_remove_task(self):
+        index = self.view.currentIndex()
+        if not index.isValid():
+            QMessageBox.warning(self, "No selection", "Please select a task to remove.")
+            return
+
+        row = index.row()
+        task_id = self.model._tasks[row]["id"]
+        task_desc = self.model._tasks[row]["desc"]
+
+        confirm = QMessageBox.question(
+            self,
+            "Confirm Deletion",
+            f"Are you sure you want to remove task [{task_id}]: \"{task_desc}\"?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if confirm == QMessageBox.StandardButton.Yes:
+            self.model.remove_task(row)
+            self.view.clearSelection()
 
 
 def main():
