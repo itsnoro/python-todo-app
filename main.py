@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtWidgets import QTableView, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QInputDialog
+from PyQt6.QtWidgets import QMessageBox
 from tasks import load_tasks
 
 class TaskModel(QAbstractTableModel):
@@ -50,6 +51,15 @@ class TaskModel(QAbstractTableModel):
         if role != Qt.ItemDataRole.DisplayRole or orientation != Qt.Orientation.Horizontal:
             return None
         return ["ID", "Description", "Done"][section]
+    def toggle_done(self, row: int):
+        from tasks import save_tasks
+        if row < 0 or row >= len(self._tasks):
+            return
+        task = self._tasks[row]
+        task['done'] = not task.get('done', False)
+        self.dataChanged.emit(self.index(row, 0), self.index(row, 2))
+        save_tasks(self._tasks)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -74,6 +84,9 @@ class MainWindow(QMainWindow):
         add_btn.clicked.connect(self.on_add_task)
         button_layout.addWidget(add_btn)
         layout.addLayout(button_layout)
+        done_btn = QPushButton("✅ Mark as Done")
+        done_btn.clicked.connect(self.on_mark_done)
+        button_layout.addWidget(done_btn)
 
     def on_add_task(self):
         text, ok = QInputDialog.getText(self, "Add Task", "Enter task description:")
@@ -81,6 +94,15 @@ class MainWindow(QMainWindow):
             self.model.add_task(text.strip())
             self.view.resizeColumnsToContents()
 
+    def on_mark_done(self):
+        index = self.view.currentIndex()
+        if not index.isValid():
+            QMessageBox.warning(self, "No selection", "Please select a task to mark as done.")
+            return
+        row = index.row()
+        self.model.toggle_done(row)
+        self.view.clearSelection()
+        self.view.resizeColumnsToContents()
 
 
 def main():
