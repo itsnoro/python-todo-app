@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QTableView, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QInputDialog
 from PyQt6.QtWidgets import QMessageBox
+from datetime import datetime
 from tasks import load_tasks
 
 class TaskModel(QAbstractTableModel):
@@ -15,11 +16,15 @@ class TaskModel(QAbstractTableModel):
     def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:
         return len(self._tasks)
 
-    def columnCount(self, parent: QModelIndex = QModelIndex()) -> int:
-        # We'll show: ID, Description, Done
-        return 3
+    def columnCount(self, parent=QModelIndex()):
+        return 5  # ID, Desc, Done, Created, Completed
 
-    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole):
+    def headerData(self, section, orientation, role):
+        if role != Qt.ItemDataRole.DisplayRole or orientation != Qt.Orientation.Horizontal:
+            return None
+        return ["ID", "Description", "Done", "Created At", "Completed At"][section]
+
+    def data(self, index, role):
         if role != Qt.ItemDataRole.DisplayRole:
             return None
         task = self._tasks[index.row()]
@@ -30,34 +35,41 @@ class TaskModel(QAbstractTableModel):
             return task['desc']
         elif col == 2:
             return "✓" if task.get('done') else ""
+        elif col == 3:
+            return task.get("created_at", "")
+        elif col == 4:
+            return task.get("completed_at", "")
         return None
+
     def add_task(self, desc: str):
         from tasks import save_tasks
-        # Generate new ID
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         next_id = max((t["id"] for t in self._tasks), default=0) + 1
         task = {
             "id": next_id,
             "desc": desc,
             "done": False,
-            "created_at": "",  # optional
+            "created_at": now,
             "completed_at": None
         }
         self.beginInsertRows(QModelIndex(), len(self._tasks), len(self._tasks))
         self._tasks.append(task)
         self.endInsertRows()
         save_tasks(self._tasks)
-
-    def headerData(self, section: int, orientation, role: int = Qt.ItemDataRole.DisplayRole):
-        if role != Qt.ItemDataRole.DisplayRole or orientation != Qt.Orientation.Horizontal:
-            return None
-        return ["ID", "Description", "Done"][section]
+    
     def toggle_done(self, row: int):
         from tasks import save_tasks
         if row < 0 or row >= len(self._tasks):
             return
         task = self._tasks[row]
-        task['done'] = not task.get('done', False)
-        self.dataChanged.emit(self.index(row, 0), self.index(row, 2))
+        task["done"] = not task.get("done", False)
+
+        if task["done"]:
+            task["completed_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            task["completed_at"] = None
+
+        self.dataChanged.emit(self.index(row, 0), self.index(row, self.columnCount()))
         save_tasks(self._tasks)
 
     def remove_task(self, row: int):
