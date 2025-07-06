@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QTableView, QVBoxLayout, QWidget
 from PyQt6.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QInputDialog
 from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtGui import QIcon
 from datetime import datetime
 from tasks import load_tasks
 
@@ -107,21 +108,23 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.view)
         # Add Task Button
         button_layout = QHBoxLayout()
-        add_btn = QPushButton("➕ Add Task")
+        add_btn = QPushButton(" Add Task")
+        add_btn.setIcon(QIcon("res/add.png"))
         add_btn.clicked.connect(self.on_add_task)
         button_layout.addWidget(add_btn)
         layout.addLayout(button_layout)
-        done_btn = QPushButton("✅ Mark as Done")
+        done_btn = QPushButton(" Mark as Done")
+        done_btn.setIcon(QIcon("res/done.png"))
         done_btn.clicked.connect(self.on_mark_done)
         button_layout.addWidget(done_btn)
-        remove_btn = QPushButton("🗑 Remove Task")
+        remove_btn = QPushButton(" Remove Task")
+        remove_btn.setIcon(QIcon("res/remove.png"))
         remove_btn.clicked.connect(self.on_remove_task)
         button_layout.addWidget(remove_btn)
-        edit_btn = QPushButton("✏ Edit Task")
+        edit_btn = QPushButton(" Edit Task")
+        edit_btn.setIcon(QIcon("res/edit.png"))
         edit_btn.clicked.connect(self.on_edit_task)
         button_layout.addWidget(edit_btn)
-
-
 
     def on_add_task(self):
         text, ok = QInputDialog.getText(self, "Add Task", "Enter task description:")
@@ -184,6 +187,11 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
+
+    # Load QSS style
+    with open("style.qss", "r") as f:
+        app.setStyleSheet(f.read())
+
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
