@@ -68,6 +68,13 @@ class TaskModel(QAbstractTableModel):
             self.endRemoveRows()
             save_tasks(self._tasks)
 
+    def edit_task(self, row: int, new_desc: str):
+        from tasks import save_tasks
+        if 0 <= row < len(self._tasks):
+            self._tasks[row]["desc"] = new_desc
+            self.dataChanged.emit(self.index(row, 1), self.index(row, 1))
+            save_tasks(self._tasks)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -98,6 +105,10 @@ class MainWindow(QMainWindow):
         remove_btn = QPushButton("🗑 Remove Task")
         remove_btn.clicked.connect(self.on_remove_task)
         button_layout.addWidget(remove_btn)
+        edit_btn = QPushButton("✏ Edit Task")
+        edit_btn.clicked.connect(self.on_edit_task)
+        button_layout.addWidget(edit_btn)
+
 
 
     def on_add_task(self):
@@ -136,6 +147,27 @@ class MainWindow(QMainWindow):
         if confirm == QMessageBox.StandardButton.Yes:
             self.model.remove_task(row)
             self.view.clearSelection()
+
+    def on_edit_task(self):
+        index = self.view.currentIndex()
+        if not index.isValid():
+            QMessageBox.warning(self, "No selection", "Please select a task to edit.")
+            return
+
+        row = index.row()
+        current_desc = self.model._tasks[row]["desc"]
+
+        new_desc, ok = QInputDialog.getText(
+            self,
+            "Edit Task",
+            "Edit the task description:",
+            text=current_desc
+        )
+
+        if ok and new_desc.strip() and new_desc.strip() != current_desc:
+            self.model.edit_task(row, new_desc.strip())
+            self.view.clearSelection()
+  
 
 
 def main():
