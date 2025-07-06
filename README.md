@@ -22,7 +22,7 @@ A modern, responsive To-Do List desktop application built with **Python** and **
 📁 your-todo-app/
 ├── main.py              # Main app and GUI logic
 ├── tasks.py             # Task loading and saving (JSON)
-├── tasks.json           # ✅ Data file for storing all tasks
+├── tasks.json           # Data file for storing all tasks
 ├── style_dark.qss       # QSS file for dark theme
 ├── style_light.qss      # QSS file for light theme
 ├── res/                 # Folder for icons (.svg or .png)
