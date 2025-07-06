@@ -12,7 +12,6 @@ A modern, responsive To-Do List desktop application built with **Python** and **
 - ✏️ **Edit or Delete** – Modify or remove tasks directly from the card.
 - 📅 **Timestamps** – Shows creation and completion times on each card.
 - 🧩 **Responsive Layout** – Task cards automatically wrap to fit window size.
-- 💬 **Empty State** – A friendly centered message when no tasks exist.
 - 💾 **Persistent Storage** – Tasks are saved in a local JSON file.
 
 ---
