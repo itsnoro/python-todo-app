@@ -74,4 +74,4 @@ MIT License. Free to use, modify, and share.
 
 ## 🙌 Credits
 
-Built with ❤️ by [Noro].
+Lovingly Crafted ❤️ By **Noro**.
