@@ -59,10 +59,10 @@ python main.py
 
 ## 📷 Screenshots
 
-```
+### 🔲 Dark Theme
 ![Dark Mode](screenshots/dark_mode.png)
+### ⬜ Light Theme
 ![Light Mode](screenshots/light_mode.png)
-```
 
 ---
 
